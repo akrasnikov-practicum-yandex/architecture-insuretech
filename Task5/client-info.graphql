@@ -1,0 +1,65 @@
+# =============================================================================
+# client-info — GraphQL-схема (Task 5)
+# Эквивалент REST API сервиса управления клиентскими данными.
+# Один эндпоинт (POST /graphql); потребитель сам выбирает нужные поля в запросе,
+# что устраняет over-/under-fetching и снижает число обращений (RPS) к client-info.
+# =============================================================================
+
+"""Дата в формате ISO-8601 (YYYY-MM-DD). Соответствует строковым датам исходного Swagger."""
+scalar Date
+
+"""Клиент. В исходном REST — ресурс GET /clients/{id} (атрибутивный состав до ~500 полей)."""
+type Client {
+  "Идентификатор клиента"
+  id: ID!
+  "ФИО / имя клиента"
+  name: String
+  "Возраст"
+  age: Int
+
+  "Документы клиента (в REST — отдельный ресурс GET /clients/{id}/documents)."
+  documents: [Document!]
+  "Родственники клиента (в REST — отдельный ресурс GET /clients/{id}/relatives)."
+  relatives: [Relative!]
+}
+
+"""Документ клиента. В исходном REST — элемент GET /clients/{id}/documents."""
+type Document {
+  "Идентификатор документа"
+  id: ID!
+  "Тип документа (паспорт, СНИЛС и т.п.)"
+  type: String
+  "Номер документа"
+  number: String
+  "Дата выдачи"
+  issueDate: Date
+  "Срок действия"
+  expiryDate: Date
+}
+
+"""Родственник клиента. В исходном REST — элемент GET /clients/{id}/relatives."""
+type Relative {
+  "Идентификатор записи о родственнике"
+  id: ID!
+  "Тип родства (супруг, ребёнок и т.п.)"
+  relationType: String
+  "Имя родственника"
+  name: String
+  "Возраст"
+  age: Int
+}
+
+type Query {
+  """
+  Клиент по идентификатору. Покрывает REST: GET /clients/{id}.
+  Через вложенные поля documents/relatives одним запросом закрывает и
+  GET /clients/{id}/documents, и GET /clients/{id}/relatives — с выбором только нужных полей.
+  """
+  client(id: ID!): Client
+
+  "Документы клиента. Покрывает REST: GET /clients/{id}/documents."
+  documents(clientId: ID!): [Document!]!
+
+  "Родственники клиента. Покрывает REST: GET /clients/{id}/relatives."
+  relatives(clientId: ID!): [Relative!]!
+}
