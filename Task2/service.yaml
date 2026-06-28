@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scaletestapp
+  labels:
+    app: scaletestapp
+spec:
+  type: NodePort               # совместимо с `minikube service scaletestapp --url`
+  selector:
+    app: scaletestapp          # маршрутизирует трафик на поды Deployment scaletestapp
+  ports:
+    - protocol: TCP
+      port: 80                 # порт сервиса
+      targetPort: 8080         # порт контейнера приложения
