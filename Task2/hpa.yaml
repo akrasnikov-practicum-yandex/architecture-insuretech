@@ -1,0 +1,28 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: scaletestapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: scaletestapp
+  minReplicas: 1
+  maxReplicas: 10              # максимум реплик — по заданию
+  metrics:
+    # Основной метрик — память, целевая утилизация 80% (по заданию).
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    # Страховочный метрик — CPU 80%. HTTP-нагрузка GET / может не растить память;
+    # HPA берёт максимум из рекомендаций по обоим метрикам, поэтому масштабирование
+    # сработает на демонстрации даже если память остаётся стабильной.
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80

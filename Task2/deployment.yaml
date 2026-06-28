@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scaletestapp
+  labels:
+    app: scaletestapp
+spec:
+  replicas: 1                      # стартовое количество реплик — по заданию
+  selector:
+    matchLabels:
+      app: scaletestapp
+  template:
+    metadata:
+      labels:
+        app: scaletestapp
+    spec:
+      containers:
+        - name: scaletestapp
+          image: ghcr.io/yandex-practicum/scaletestapp:latest
+          ports:
+            - containerPort: 8080  # GET / и GET /metrics доступны на 8080
+          resources:
+            requests:
+              # requests ОБЯЗАТЕЛЕН: HPA считает утилизацию как usage/requests.
+              memory: "25Mi"       # 80% от 25Mi = 20Mi -> порог срабатывания HPA по памяти
+              cpu: "100m"          # 80% от 100m = 80m  -> порог срабатывания HPA по CPU
+            limits:
+              memory: "30Mi"       # лимит памяти = 30Mi (по заданию); при превышении -> OOMKilled
+              cpu: "250m"          # запас по CPU над requests, чтобы под не убивался раньше масштабирования
