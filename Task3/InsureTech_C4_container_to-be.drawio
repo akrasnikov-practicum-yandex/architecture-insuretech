@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="claude-code" type="device" version="24.0.0">
+  <diagram id="insuretech-c4-tobe" name="InsureTech_C4_container_to-be">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="InsureTech — C4 Container Diagram (to-be, Event-Driven)" style="text;html=1;align=left;verticalAlign=middle;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary" value="Граница системы: InsureTech" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=none;strokeColor=#444444;fontColor=#444444;verticalAlign=top;fontStyle=2;align=left;spacingLeft=10;spacingTop=6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="1190" height="800" as="geometry" />
+        </mxCell>
+        <mxCell id="b2c" value="Клиент B2C&lt;br/&gt;[Person]&lt;br/&gt;подбор и оформление страховок" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#08427B;fontColor=#ffffff;strokeColor=#073B6F;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="55" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="b2b" value="Партнёр B2B&lt;br/&gt;[Person]&lt;br/&gt;интеграция через API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#08427B;fontColor=#ffffff;strokeColor=#073B6F;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="55" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="webapp" value="Web App&lt;br/&gt;[браузерный SPA]&lt;br/&gt;UI для клиентов" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="90" y="235" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="core" value="core-app&lt;br/&gt;[монолит, backend]&lt;br/&gt;продукты, оформление полисов&lt;br/&gt;+ локальная реплика продуктов&lt;br/&gt;+ Transactional Outbox" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="90" y="370" width="250" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="client" value="client-info&lt;br/&gt;[сервис]&lt;br/&gt;данные клиентов" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="390" y="380" width="210" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="agg" value="ins-product-aggregator&lt;br/&gt;[сервис]&lt;br/&gt;интеграция со страховыми,&lt;br/&gt;фоновый опрос компаний&lt;br/&gt;+ Transactional Outbox" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="90" y="590" width="250" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="settle" value="ins-comp-settlement&lt;br/&gt;[сервис]&lt;br/&gt;взаиморасчёты со страховыми&lt;br/&gt;+ локальные реплики&lt;br/&gt;+ Transactional Outbox" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="390" y="590" width="250" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" value="Apache Kafka&amp;nbsp; [event broker]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6B4FBB;fontColor=#ffffff;strokeColor=#52399A;fontSize=12;verticalAlign=top;fontStyle=1;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="700" y="360" width="380" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="t_prod" value="topic: insurance-products-updated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8E74D6;fontColor=#ffffff;strokeColor=#52399A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="720" y="430" width="340" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="t_pol" value="topic: policies-issued" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8E74D6;fontColor=#ffffff;strokeColor=#52399A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="720" y="510" width="340" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pg" value="PostgreSQL&lt;br/&gt;[схемы по сервисам]&lt;br/&gt;+ таблицы outbox" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="760" y="650" width="290" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ins" value="Страховые компании ×10&lt;br/&gt;[внешние системы, REST API]&lt;br/&gt;продукты, тарифы, расчёты" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;fontColor=#ffffff;strokeColor=#6E6E6E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="590" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="n_change" value="&lt;b&gt;Изменение интеграций:&lt;/b&gt;&lt;br/&gt;Было — REST-опрос продуктов раз в 15 мин (core-app) и раз в сутки (settlement), а также суточный REST-pull оформленных страховок.&lt;br/&gt;Стало — обновление реплик и передача страховок через события Kafka." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="200" width="380" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="n_outbox" value="&lt;b&gt;Transactional Outbox — ДА&lt;/b&gt; (core-app, ins-product-aggregator):&lt;br/&gt;запись в БД + событие в одной транзакции; relay = Polling Publisher (или CDC/Debezium по WAL).&lt;br/&gt;Доставка at-least-once ⇒ потребители идемпотентны (дедуп по event_id). Партиционирование по insurance_company_id." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="360" width="360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;Легенда&lt;/b&gt;&lt;br/&gt;— сплошная стрелка: REST (синхронно)&lt;br/&gt;— пунктир (фиолетовый): событие Kafka (асинхронно)&lt;br/&gt;— зелёная: доступ к БД" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="90" y="800" width="300" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="e_b2c_web" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=10;" edge="1" parent="1" source="b2c" target="webapp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_web_core" value="REST / HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=10;" edge="1" parent="1" source="webapp" target="core">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_b2b_core" value="REST API (партнёры)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=10;" edge="1" parent="1" source="b2b" target="core">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_core_client" value="REST (sync)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=10;" edge="1" parent="1" source="core" target="client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_agg_ins" value="REST, плановый фоновый опрос" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=10;" edge="1" parent="1" source="agg" target="ins">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_settle_ins" value="REST, реестр раз в месяц" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;fontSize=10;" edge="1" parent="1" source="settle" target="ins">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_core_pg" value="JDBC (+ outbox)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2D7600;fontColor=#2D7600;fontSize=10;" edge="1" parent="1" source="core" target="pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_agg_pg" value="JDBC (+ outbox)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2D7600;fontColor=#2D7600;fontSize=10;" edge="1" parent="1" source="agg" target="pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_settle_pg" value="JDBC (+ outbox)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2D7600;fontColor=#2D7600;fontSize=10;" edge="1" parent="1" source="settle" target="pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_agg_tprod" value="publish ProductUpdated (Outbox→Kafka)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#6B4FBB;fontColor=#52399A;fontSize=10;" edge="1" parent="1" source="agg" target="t_prod">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tprod_core" value="consume → реплика продуктов" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#6B4FBB;fontColor=#52399A;fontSize=10;" edge="1" parent="1" source="t_prod" target="core">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tprod_settle" value="consume → реплика продуктов" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#6B4FBB;fontColor=#52399A;fontSize=10;" edge="1" parent="1" source="t_prod" target="settle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_core_tpol" value="publish PolicyIssued (Outbox→Kafka)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#6B4FBB;fontColor=#52399A;fontSize=10;" edge="1" parent="1" source="core" target="t_pol">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tpol_settle" value="consume оформленные страховки" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#6B4FBB;fontColor=#52399A;fontSize=10;" edge="1" parent="1" source="t_pol" target="settle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
