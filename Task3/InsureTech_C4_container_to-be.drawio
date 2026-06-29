@@ -29,7 +29,7 @@
         <mxCell id="agg" value="ins-product-aggregator&lt;br/&gt;[сервис]&lt;br/&gt;интеграция со страховыми,&lt;br/&gt;фоновый опрос компаний&lt;br/&gt;+ Transactional Outbox" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="90" y="590" width="250" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="settle" value="ins-comp-settlement&lt;br/&gt;[сервис]&lt;br/&gt;взаиморасчёты со страховыми&lt;br/&gt;+ локальные реплики&lt;br/&gt;+ Transactional Outbox" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+        <mxCell id="settle" value="ins-comp-settlement&lt;br/&gt;[сервис]&lt;br/&gt;взаиморасчёты со страховыми&lt;br/&gt;+ локальные реплики (consumer)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;fontColor=#ffffff;strokeColor=#0E5BA6;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="390" y="590" width="250" height="150" as="geometry" />
         </mxCell>
         <mxCell id="kafka" value="Apache Kafka&amp;nbsp; [event broker]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6B4FBB;fontColor=#ffffff;strokeColor=#52399A;fontSize=12;verticalAlign=top;fontStyle=1;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
@@ -80,7 +80,7 @@
         <mxCell id="e_agg_pg" value="JDBC (+ outbox)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2D7600;fontColor=#2D7600;fontSize=10;" edge="1" parent="1" source="agg" target="pg">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_settle_pg" value="JDBC (+ outbox)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2D7600;fontColor=#2D7600;fontSize=10;" edge="1" parent="1" source="settle" target="pg">
+        <mxCell id="e_settle_pg" value="JDBC (reads/writes replicas)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2D7600;fontColor=#2D7600;fontSize=10;" edge="1" parent="1" source="settle" target="pg">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_agg_tprod" value="publish ProductUpdated (Outbox→Kafka)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#6B4FBB;fontColor=#52399A;fontSize=10;" edge="1" parent="1" source="agg" target="t_prod">

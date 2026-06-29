@@ -17,10 +17,10 @@ type Client {
   "Возраст"
   age: Int
 
-  "Документы клиента (в REST — отдельный ресурс GET /clients/{id}/documents)."
-  documents: [Document!]
-  "Родственники клиента (в REST — отдельный ресурс GET /clients/{id}/relatives)."
-  relatives: [Relative!]
+  "Документы клиента (в REST — отдельный ресурс GET /clients/{id}/documents). Пустой список, если документов нет."
+  documents: [Document!]!
+  "Родственники клиента (в REST — отдельный ресурс GET /clients/{id}/relatives). Пустой список, если родственников нет."
+  relatives: [Relative!]!
 }
 
 """Документ клиента. В исходном REST — элемент GET /clients/{id}/documents."""
