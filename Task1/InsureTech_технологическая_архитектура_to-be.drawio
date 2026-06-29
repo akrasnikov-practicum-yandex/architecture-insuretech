@@ -20,14 +20,14 @@
         <mxCell id="gslb" value="GSLB / Yandex Cloud DNS&lt;br/&gt;гео-роутинг + health-based failover" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="620" y="85" width="300" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="n_failover" value="&lt;b&gt;Фейловер (клиент↔приложение):&lt;/b&gt;&lt;br/&gt;Active-Active — все 3 зоны обслуживают трафик. GSLB опрашивает health-check каждые ~10с; при отказе зоны — DNS-failover на здоровые зоны. Низкий TTL ⇒ переключение ≪ RTO 45м. Резерв мощности по правилу 50% утилизации." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="980" y="60" width="360" height="120" as="geometry" />
+        <mxCell id="n_failover" value="&lt;b&gt;Фейловер (клиент↔приложение):&lt;/b&gt;&lt;br/&gt;Active-Active — все 3 зоны обслуживают трафик. GSLB опрашивает health-check каждые ~10с; при отказе зоны — DNS-failover на здоровые зоны. Низкий TTL ⇒ переключение ≪ RTO 45м. Резерв по правилу 50% утилизации.&lt;br/&gt;&lt;b&gt;На клиенте:&lt;/b&gt; несколько A-записей + retry/timeout (client-side failover) — закрывает уровень уже подключённых пользователей, не дожидаясь истечения DNS-TTL." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="50" width="360" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="n_scaling" value="&lt;b&gt;Масштабирование:&lt;/b&gt;&lt;br/&gt;Горизонтальное — для stateless-сервисов (K8s HPA + доп. ноды/зоны); именно оно эффективно при росте RPS. Вертикальное — дополняюще для БД. Доп. зоны обязательны для 99,9% и гео-латентности." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1370" y="200" width="300" height="130" as="geometry" />
+        <mxCell id="n_scaling" value="&lt;b&gt;Масштабирование:&lt;/b&gt;&lt;br/&gt;Горизонтальное — для stateless-сервисов (K8s HPA + доп. ноды/зоны); именно оно эффективно при росте RPS. Вертикальное — дополняюще для БД (через controlled switchover Patroni — без простоя). Доп. зоны обязательны для 99,9% и гео-латентности." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="195" width="300" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="n_clusters" value="&lt;b&gt;K8s:&lt;/b&gt; независимые кластеры в каждой зоне (НЕ stretched). Сетевой раздел между зонами не ломает кворум control-plane/etcd; отказ зоны локализуется. Stretched требует low-latency сети и хрупок к partition." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="40" y="215" width="470" height="90" as="geometry" />
+        <mxCell id="n_clusters" value="&lt;b&gt;K8s: независимые кластеры в каждой зоне (НЕ растянутый).&lt;/b&gt; Причина — изоляция blast-radius и независимый rollout, а не сетевой кворум: зоны одного региона низколатентны, поэтому растянутый кворум etcd Patroni (редкая запись) допустим, тогда как единый control-plane K8s повышает связность отказов и усложняет независимые обновления." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="205" width="470" height="110" as="geometry" />
         </mxCell>
         <mxCell id="zA" value="Зона доступности A" style="swimlane;startSize=30;rounded=1;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=14;verticalAlign=top;" vertex="1" parent="1">
           <mxGeometry x="40" y="330" width="500" height="730" as="geometry" />
@@ -185,6 +185,9 @@
         <mxCell id="e_zA_pg_etcd" value="watch / leader" style="edgeStyle=none;html=1;endArrow=none;dashed=1;strokeColor=#9673A6;fontColor=#6B4E8A;" edge="1" parent="1" source="zA_pg" target="zA_etcd">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="e_zA_hc" value="health-check (liveness/readiness)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#D79B00;fontColor=#9A6300;" edge="1" parent="1" source="zA_lb" target="zA_k8s">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="e_zB_lb_gw" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" edge="1" parent="1" source="zB_lb" target="zB_gw">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -198,6 +201,9 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_zB_pg_etcd" value="watch / leader" style="edgeStyle=none;html=1;endArrow=none;dashed=1;strokeColor=#9673A6;fontColor=#6B4E8A;" edge="1" parent="1" source="zB_pg" target="zB_etcd">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_zB_hc" value="health-check (liveness/readiness)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#D79B00;fontColor=#9A6300;" edge="1" parent="1" source="zB_lb" target="zB_k8s">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_zC_lb_gw" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;" edge="1" parent="1" source="zC_lb" target="zC_gw">
@@ -215,6 +221,9 @@
         <mxCell id="e_zC_pg_etcd" value="watch / leader" style="edgeStyle=none;html=1;endArrow=none;dashed=1;strokeColor=#9673A6;fontColor=#6B4E8A;" edge="1" parent="1" source="zC_pg" target="zC_etcd">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="e_zC_hc" value="health-check (liveness/readiness)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#D79B00;fontColor=#9A6300;" edge="1" parent="1" source="zC_lb" target="zC_k8s">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="e_repl_sync" value="sync replication (RPO≈0)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#82B366;fontColor=#3F6E2B;" edge="1" parent="1" source="zA_pg" target="zB_pg">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -227,14 +236,26 @@
         <mxCell id="e_q_bc" value="" style="edgeStyle=none;html=1;endArrow=none;dashed=1;strokeColor=#9673A6;fontColor=#6B4E8A;" edge="1" parent="1" source="zB_etcd" target="zC_etcd">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_backup" value="pgBackRest: бэкап + WAL-архив (≤5м ⇒ RPO≤15м)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#82B366;fontColor=#3F6E2B;" edge="1" parent="1" source="zA_pg" target="s3">
+        <mxCell id="e_backup" value="pgBackRest: бэкап + WAL-архив текущего Primary (≤5м ⇒ RPO≤15м)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#82B366;fontColor=#3F6E2B;" edge="1" parent="1" source="zA_pg" target="s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_backup_b" value="архивация при промоуте в Primary" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#82B366;fontColor=#3F6E2B;fontSize=9;" edge="1" parent="1" source="zB_pg" target="s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_backup_c" value="архивация при промоуте в Primary" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#82B366;fontColor=#3F6E2B;fontSize=9;" edge="1" parent="1" source="zC_pg" target="s3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e_mon_a" value="scrape /metrics" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;dashed=1;strokeColor=#B85450;fontColor=#8A3B37;" edge="1" parent="1" source="zA_k8s" target="mon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_mon_c" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;dashed=1;strokeColor=#B85450;fontColor=#8A3B37;" edge="1" parent="1" source="zC_k8s" target="mon">
+        <mxCell id="e_mon_b" value="scrape /metrics" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;dashed=1;strokeColor=#B85450;fontColor=#8A3B37;" edge="1" parent="1" source="zB_k8s" target="mon">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mon_c" value="scrape /metrics" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;dashed=1;strokeColor=#B85450;fontColor=#8A3B37;" edge="1" parent="1" source="zC_k8s" target="mon">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="n_kafka" value="&lt;b&gt;Брокер сообщений (Apache Kafka)&lt;/b&gt; вводится в Task 3 (переход на event-driven) и используется в Task 4. В данной технологической схеме (инфраструктура/отказоустойчивость) намеренно опущен; в проде — Managed Kafka по зонам, в той же Active-Active топологии." style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1250" width="900" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
