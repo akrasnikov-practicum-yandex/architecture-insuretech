@@ -1,0 +1,73 @@
+# Нагрузка Locust ИЗНУТРИ кластера против ClusterIP-сервиса scaletestapp (без minikube-тоннеля).
+# Тоннель `minikube service --url` на Windows отвергает соединения под высокой конкуренцией
+# (ConnectionRefusedError 10061) и трафик не доходит до пода. Здесь генератор работает как Job
+# в кластере и ходит на http://scaletestapp:80 напрямую -> Failures ~0, CPU/память пода растут,
+# HPA масштабирует поды 1 -> N.
+#
+# Запуск:   kubectl apply -f loadtest-locust.yaml
+# Логи:     kubectl logs -f job/locust-load
+# Очистка:  kubectl delete -f loadtest-locust.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: locust-script
+  labels:
+    app: locust-load
+data:
+  locustfile.py: |
+    # FastHttpUser переиспользует TCP-соединения (keep-alive) -> высокий RPS без лавины
+    # новых сокетов; малый wait_time -> больше запросов -> CPU/память пода переходят порог 70%.
+    from locust import FastHttpUser, between, task
+
+
+    class WebsiteUser(FastHttpUser):
+        wait_time = between(0.05, 0.3)
+
+        @task
+        def index(self):
+            self.client.get("/")
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: locust-load
+  labels:
+    app: locust-load
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: locust-load
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: locust
+          image: locustio/locust:2.44.4
+          args:
+            - "-f"
+            - "/mnt/locust/locustfile.py"
+            - "--headless"
+            - "-u"
+            - "500"                       # пользователей
+            - "-r"
+            - "50"                        # spawn rate
+            - "--run-time"
+            - "5m"                        # длительность прогона
+            - "-H"
+            - "http://scaletestapp"       # ClusterIP-сервис по DNS (порт 80)
+          volumeMounts:
+            - name: script
+              mountPath: /mnt/locust
+          resources:
+            requests:
+              cpu: "200m"                 # генератору нужен свой CPU, чтобы создавать нагрузку
+              memory: "128Mi"
+            limits:
+              cpu: "1"
+              memory: "256Mi"
+      volumes:
+        - name: script
+          configMap:
+            name: locust-script
