@@ -15,6 +15,7 @@
 | `service.yaml` | Service `scaletestapp` (NodePort, 80 → 8080) |
 | `hpa.yaml` | HorizontalPodAutoscaler (`autoscaling/v2`, min 1 / max 10, память 70% + CPU 70%; в задании указано 80%) |
 | `locustfile.py` | Сценарий нагрузки (`GET /`) |
+| `loadtest-locust.yaml` | Генератор Locust как `Job` внутри кластера (ConfigMap + Job) — нагрузка без minikube-тоннеля |
 | `scaling-log.txt` | Подтверждение изменения числа реплик под нагрузкой (рост 1→3→6→10) |
 
 ## Ключевые решения
@@ -80,7 +81,19 @@ locust
 > (`ConnectionRefusedError 10061`, высокий % Failures), и до пода доходит лишь малая часть трафика —
 > CPU пода не растёт, и HPA не масштабирует. Умеренная нагрузка (500–1000 пользователей) даёт высокий
 > **успешный** RPS, реально нагружающий под, и HPA масштабирует поды. Альтернатива без тоннеля —
-> запустить Locust как pod внутри кластера против ClusterIP сервиса.
+> запустить Locust как pod внутри кластера против ClusterIP сервиса (см. ниже, рекомендуется).
+
+### 4b. Нагрузка ИЗНУТРИ кластера (без тоннеля) — рекомендуемый способ
+Самый надёжный путь: генератор Locust работает как `Job` в кластере и ходит на ClusterIP-сервис
+`http://scaletestapp:80` напрямую — без тоннеля, поэтому `ConnectionRefused` практически нет, весь RPS
+доходит до пода, CPU/память переходят порог и HPA масштабирует поды. Манифест — `loadtest-locust.yaml`
+(ConfigMap с `FastHttpUser`-сценарием + Job, 500 пользователей, 5 минут).
+```bash
+kubectl apply -f loadtest-locust.yaml
+kubectl logs -f job/locust-load          # RPS и Failures (≈0)
+# очистка после прогона:
+kubectl delete -f loadtest-locust.yaml
+```
 
 ### 5. Наблюдать масштабирование (отдельные терминалы)
 ```bash
